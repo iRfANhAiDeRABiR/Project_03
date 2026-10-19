@@ -247,8 +247,8 @@ export const allProducts = [
   {
     id: "autocad",
     categoryId: "design-engineering",
-    name: "Autodesk AutoCAD 2025/2026",
-    nameBn: "অটোডেস্ক অটোক্যাড ২০২৫/২০২৬",
+    name: "Autodesk AutoCAD 2027/26/25/24",
+    nameBn: "অটোডেস্ক অটোক্যাড ২০২৭/২৬/২৫/২৪",
     tagline: "Professional 2D Drafting & 3D Modeling Software",
     taglineBn: "প্রফেশনাল ২ডি ড্রাফটিং ও ৩ডি মডেলিং সফটওয়্যার",
     description: "Industry standard for civil engineers, architects, mechanical designers, and CAD technicians.",

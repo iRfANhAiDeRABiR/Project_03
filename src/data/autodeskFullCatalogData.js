@@ -10,7 +10,7 @@ export const catalogCategories = [
     apps: [
       {
         id: "autocad-precision",
-        name: "AutoCAD 2024 / 2025",
+        name: "AutoCAD 2027/26/25/24",
         desc: "2D & 3D Precision Drafting & Design",
         letter: "A",
         code: "CAD",

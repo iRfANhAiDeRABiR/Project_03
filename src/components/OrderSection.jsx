@@ -35,9 +35,9 @@ export default function OrderSection() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Secret Coupon Code state (SAFE10 for 10% discount, not displayed in UI)
+  // Secret Coupon Code state (SAVE10 for 10% discount, not displayed in UI)
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState(null); // 'SAFE10' | null
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // 'SAVE10' | null
   const [couponError, setCouponError] = useState('');
 
   // The 3 simplified Autodesk All Apps duration options requested by user
@@ -55,7 +55,7 @@ export default function OrderSection() {
 
   const parsedQty = Math.max(1, parseInt(quantity, 10) || 1);
   const baseTotalPrice = currentPlan.price * parsedQty;
-  const discountPercent = appliedCoupon === 'SAFE10' ? 0.10 : 0;
+  const discountPercent = (appliedCoupon === 'SAFE10' || appliedCoupon === 'SAVE10') ? 0.10 : 0;
   const discountAmount = Math.round(baseTotalPrice * discountPercent);
   const finalTotalPrice = baseTotalPrice - discountAmount;
   const finalUnitPrice = Math.round(finalTotalPrice / parsedQty);
@@ -69,8 +69,8 @@ export default function OrderSection() {
       setCouponError(lang === 'bn' ? 'কুপন কোড লিখুন' : 'Please enter a coupon code');
       return;
     }
-    if (cleanCode === 'SAFE10') {
-      setAppliedCoupon('SAFE10');
+    if (cleanCode === 'SAFE10' || cleanCode === 'SAVE10') {
+      setAppliedCoupon(cleanCode);
       setCouponError('');
     } else {
       setCouponError(lang === 'bn' ? 'ভুল বা মেয়াদোত্তীর্ণ কুপন কোড' : 'Invalid coupon code');
@@ -237,7 +237,7 @@ export default function OrderSection() {
               </div>
             </div>
 
-            {/* Coupon / Promo Code Input (SAFE10 for 10% discount, code not printed in UI) */}
+            {/* Coupon / Promo Code Input (SAVE10 for 10% discount, code not printed in UI) */}
             <div className="mb-5">
               <label className="text-xs font-semibold text-slate-700 block mb-1.5 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
