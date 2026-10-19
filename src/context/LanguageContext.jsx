@@ -51,6 +51,32 @@ export function LanguageProvider({ children }) {
     }
   };
 
+  const [activePaymentOrder, setActivePaymentOrder] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ecosafeguard_active_order');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const startPayment = (order) => {
+    setActivePaymentOrder(order);
+    try {
+      localStorage.setItem('ecosafeguard_active_order', JSON.stringify(order));
+    } catch (e) {}
+    window.location.hash = '#payment';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelPayment = () => {
+    setActivePaymentOrder(null);
+    try {
+      localStorage.removeItem('ecosafeguard_active_order');
+    } catch (e) {}
+    window.location.hash = '#order';
+  };
+
   const t = translations[lang] || translations.en;
 
   return (
@@ -65,6 +91,9 @@ export function LanguageProvider({ children }) {
         selectedDuration,
         setSelectedDuration,
         handleSelectProduct,
+        activePaymentOrder,
+        startPayment,
+        cancelPayment,
       }}
     >
       {children}

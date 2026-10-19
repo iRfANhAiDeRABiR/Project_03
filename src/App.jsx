@@ -18,6 +18,9 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import FloatingContactButton from './components/FloatingContactButton';
 
+import PaymentGatewayPage from './components/payment/PaymentGatewayPage';
+import { useLanguage } from './context/LanguageContext';
+
 function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col selection:bg-cyan-500 selection:text-white relative overflow-x-hidden">
@@ -78,10 +81,32 @@ function LandingPage() {
   );
 }
 
+function AppContent() {
+  const { activePaymentOrder, cancelPayment } = useLanguage();
+  const [currentHash, setCurrentHash] = React.useState(window.location.hash);
+
+  React.useEffect(() => {
+    const handleHashChange = () => setCurrentHash(window.location.hash);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  if (currentHash === '#payment' && activePaymentOrder) {
+    return (
+      <PaymentGatewayPage
+        order={activePaymentOrder}
+        onCancel={cancelPayment}
+      />
+    );
+  }
+
+  return <LandingPage />;
+}
+
 export default function App() {
   return (
     <LanguageProvider>
-      <LandingPage />
+      <AppContent />
     </LanguageProvider>
   );
 }

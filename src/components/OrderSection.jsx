@@ -20,7 +20,8 @@ export default function OrderSection() {
     selectedProduct,
     setSelectedProduct,
     selectedDuration,
-    setSelectedDuration
+    setSelectedDuration,
+    startPayment
   } = useLanguage();
 
   const [fullName, setFullName] = useState('');
@@ -31,7 +32,6 @@ export default function OrderSection() {
   const [requirements, setRequirements] = useState('');
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedOrder, setSubmittedOrder] = useState(null);
 
   // The 3 simplified Autodesk All Apps duration options requested by user
   const planOptions = autodeskAllAppsPlans;
@@ -117,7 +117,7 @@ export default function OrderSection() {
     setIsSubmitting(true);
     setTimeout(() => {
       const generatedRef = `ECO-ATD-${Math.floor(100000 + Math.random() * 900000)}`;
-      setSubmittedOrder({
+      const orderPayload = {
         refId: generatedRef,
         product: lang === 'bn' ? currentPlan.shortNameBn : currentPlan.shortName,
         planFullName: lang === 'bn' ? currentPlan.nameBn : currentPlan.name,
@@ -128,10 +128,13 @@ export default function OrderSection() {
         email: email,
         phone: phone,
         unitPrice: `৳ ${currentPlan.price.toLocaleString()}`,
-        totalPrice: totalPriceDisplay
-      });
+        totalPrice: totalPriceDisplay,
+        rawPrice: totalPrice.toLocaleString(),
+        requirements: requirements
+      };
       setIsSubmitting(false);
-    }, 700);
+      startPayment(orderPayload);
+    }, 400);
   };
 
   return (
@@ -448,65 +451,6 @@ export default function OrderSection() {
           </div>
 
         </div>
-
-        {/* Confirmation Modal */}
-        {submittedOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="max-w-md w-full rounded-3xl p-6 sm:p-8 bg-white border border-slate-200 shadow-2xl relative text-center text-slate-900">
-              <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 border border-emerald-200">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {t.order.successModal.title}
-              </h3>
-
-              <p className="text-xs text-slate-600 mb-6 leading-relaxed">
-                {t.order.successModal.message}
-              </p>
-
-              {/* Summary Receipt Box */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs space-y-2 mb-6">
-                <div className="flex justify-between pb-2 border-b border-slate-200">
-                  <span className="text-slate-500">{t.order.successModal.orderRef}</span>
-                  <span className="font-mono font-bold text-blue-600">{submittedOrder.refId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">{lang === 'bn' ? "প্যাকেজ:" : "Package:"}</span>
-                  <span className="font-bold text-slate-900 text-right max-w-[200px] truncate">{submittedOrder.product}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Duration:</span>
-                  <span className="text-slate-700 font-semibold">{submittedOrder.duration}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Seats / Quantity:</span>
-                  <span className="text-slate-700">{submittedOrder.quantity} Seat(s)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Total Price:</span>
-                  <span className="font-mono font-bold text-slate-900">{submittedOrder.totalPrice}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Delivery Email:</span>
-                  <span className="text-slate-700 truncate max-w-[180px]">{submittedOrder.email}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-slate-200">
-                  <span className="font-semibold text-slate-900">Payment Method:</span>
-                  <span className="text-emerald-700 font-bold">{submittedOrder.paymentMethod}</span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setSubmittedOrder(null)}
-                className="w-full py-3 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
-              >
-                {t.order.successModal.closeBtn}
-              </button>
-            </div>
-          </div>
-        )}
-
       </div>
     </section>
   );
