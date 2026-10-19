@@ -10,7 +10,9 @@ import {
   Clock,
   Check,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Tag,
+  X
 } from 'lucide-react';
 
 export default function OrderSection() {
@@ -33,6 +35,11 @@ export default function OrderSection() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Secret Coupon Code state (SAFE10 for 10% discount, not displayed in UI)
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null); // 'SAFE10' | null
+  const [couponError, setCouponError] = useState('');
+
   // The 3 simplified Autodesk All Apps duration options requested by user
   const planOptions = autodeskAllAppsPlans;
 
@@ -47,8 +54,34 @@ export default function OrderSection() {
   ) || planOptions[0];
 
   const parsedQty = Math.max(1, parseInt(quantity, 10) || 1);
-  const totalPrice = currentPlan.price * parsedQty;
-  const totalPriceDisplay = `৳ ${totalPrice.toLocaleString()}`;
+  const baseTotalPrice = currentPlan.price * parsedQty;
+  const discountPercent = appliedCoupon === 'SAFE10' ? 0.10 : 0;
+  const discountAmount = Math.round(baseTotalPrice * discountPercent);
+  const finalTotalPrice = baseTotalPrice - discountAmount;
+  const finalUnitPrice = Math.round(finalTotalPrice / parsedQty);
+  const totalPriceDisplay = `৳ ${finalTotalPrice.toLocaleString()}`;
+
+  // Coupon apply and remove handlers
+  const handleApplyCoupon = (e) => {
+    if (e) e.preventDefault();
+    const cleanCode = couponCode.trim().toUpperCase();
+    if (!cleanCode) {
+      setCouponError(lang === 'bn' ? 'কুপন কোড লিখুন' : 'Please enter a coupon code');
+      return;
+    }
+    if (cleanCode === 'SAFE10') {
+      setAppliedCoupon('SAFE10');
+      setCouponError('');
+    } else {
+      setCouponError(lang === 'bn' ? 'ভুল বা মেয়াদোত্তীর্ণ কুপন কোড' : 'Invalid coupon code');
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError('');
+  };
 
   const paymentMethodsConfig = [
     {
@@ -127,9 +160,12 @@ export default function OrderSection() {
         name: fullName,
         email: email,
         phone: phone,
-        unitPrice: `৳ ${currentPlan.price.toLocaleString()}`,
+        unitPrice: `৳ ${finalUnitPrice.toLocaleString()}`,
         totalPrice: totalPriceDisplay,
-        rawPrice: totalPrice.toLocaleString(),
+        rawPrice: finalTotalPrice.toLocaleString(),
+        basePrice: `৳ ${baseTotalPrice.toLocaleString()}`,
+        couponApplied: appliedCoupon || null,
+        discountAmount: appliedCoupon ? `৳ ${discountAmount.toLocaleString()}` : null,
         requirements: requirements
       };
       setIsSubmitting(false);
@@ -201,22 +237,104 @@ export default function OrderSection() {
               </div>
             </div>
 
+            {/* Coupon / Promo Code Input (SAFE10 for 10% discount, code not printed in UI) */}
+            <div className="mb-5">
+              <label className="text-xs font-semibold text-slate-700 block mb-1.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-blue-600" />
+                  <span>{lang === 'bn' ? 'কুপন বা প্রোমো কোড' : 'Coupon / Promo Code'}</span>
+                </span>
+                {appliedCoupon && (
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full animate-in fade-in">
+                    10% DISCOUNT APPLIED
+                  </span>
+                )}
+              </label>
+
+              {!appliedCoupon ? (
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        if (couponError) setCouponError('');
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleApplyCoupon();
+                        }
+                      }}
+                      placeholder={lang === 'bn' ? "কুপন কোড লিখুন" : "Enter coupon code"}
+                      className="w-full px-3.5 py-2.5 text-xs font-mono uppercase bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white text-slate-900 transition-colors placeholder:text-slate-400 placeholder:normal-case placeholder:font-sans"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-blue-600 text-white transition-all shadow-xs"
+                  >
+                    {lang === 'bn' ? 'প্রয়োগ' : 'Apply'}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <div>
+                      <div className="font-bold text-[11px]">
+                        {lang === 'bn' ? '১০% ডিসকাউন্ট সফলভাবে যুক্ত হয়েছে!' : '10% Discount Applied!'}
+                      </div>
+                      <div className="text-[10px] text-emerald-600 font-mono">
+                        -৳ {discountAmount.toLocaleString()} saved
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="p-1 rounded-lg hover:bg-emerald-100 text-emerald-700 transition-colors text-[11px] font-bold flex items-center gap-1"
+                    title="Remove coupon"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>{lang === 'bn' ? 'বাতিল' : 'Remove'}</span>
+                  </button>
+                </div>
+              )}
+
+              {couponError && (
+                <p className="text-[11px] text-rose-500 mt-1.5 flex items-center gap-1 font-medium animate-in fade-in">
+                  <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                  <span>{couponError}</span>
+                </p>
+              )}
+            </div>
+
             {/* Estimated Price Display */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 mb-6 flex items-center justify-between">
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-500 block">
                   {t.order.summaryPriceLabel}
                 </span>
-                <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
-                  {totalPriceDisplay}
-                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono">
+                    {totalPriceDisplay}
+                  </span>
+                  {appliedCoupon && (
+                    <span className="text-xs text-slate-400 line-through font-mono">
+                      ৳ {baseTotalPrice.toLocaleString()}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="text-right">
                 <span className="text-[11px] font-mono font-semibold text-slate-700 block">
                   {parsedQty} Seat(s) • {currentPlan.duration}
                 </span>
                 <span className="text-[10px] text-emerald-600 font-bold">
-                  ৳ {currentPlan.price.toLocaleString()} / seat
+                  ৳ {finalUnitPrice.toLocaleString()} / seat
                 </span>
               </div>
             </div>

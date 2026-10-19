@@ -743,7 +743,13 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                     {trxId}
                   </span>
                 </div>
-                <div className="flex justify-between pt-1">
+                {order?.discountAmount && (
+                  <div className="flex justify-between text-emerald-600 font-semibold">
+                    <span>Coupon Discount (10% OFF):</span>
+                    <span className="font-mono">-{order.discountAmount}</span>
+                  </div>
+                )}
+                <div className="flex justify-between pt-1 border-t border-slate-100">
                   <span className="font-bold text-slate-900">Total Amount:</span>
                   <span className="font-mono font-black text-base text-slate-900">{order?.totalPrice}</span>
                 </div>

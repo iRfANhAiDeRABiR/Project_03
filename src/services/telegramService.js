@@ -77,7 +77,7 @@ export const sendOrderToTelegram = async (orderPayload) => {
 📦 <b>Product:</b> ${orderPayload.product || 'Autodesk All Apps'}
 ⏳ <b>Duration:</b> ${orderPayload.duration || '1 Year'}
 🪑 <b>Seats/Qty:</b> ${orderPayload.quantity || 1} Seat(s)
-💰 <b>Total Amount:</b> <b>${orderPayload.totalPrice || '৳ 699'}</b>
+💰 <b>Total Amount:</b> <b>${orderPayload.totalPrice || '৳ 699'}</b>${orderPayload.couponApplied ? `\n🏷️ <b>Coupon:</b> <code>${orderPayload.couponApplied}</code> (-10%, saved ${orderPayload.discountAmount})` : ''}
 ━━━━━━━━━━━━━━━━━━━━━
 💳 <b>Payment Gateway:</b> <b>${orderPayload.paymentMethod || 'bKash'}</b>
 📤 <b>Sender Number:</b> <code>${orderPayload.senderNumber || 'N/A'}</code>
