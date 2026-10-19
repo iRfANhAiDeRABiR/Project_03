@@ -1,7 +1,7 @@
 // Meta (Facebook) Pixel Service for Ecosafeguard Ads Tracking
 // Add your Pixel ID to .env: VITE_FB_PIXEL_ID=your_pixel_id
 
-export const FB_PIXEL_ID = import.meta.env.VITE_FB_PIXEL_ID || "";
+export const FB_PIXEL_ID = import.meta.env.VITE_FB_PIXEL_ID || "1584380026240831";
 
 /**
  * Initializes the official Meta Pixel base tracking script
@@ -9,7 +9,7 @@ export const FB_PIXEL_ID = import.meta.env.VITE_FB_PIXEL_ID || "";
 export const initFacebookPixel = () => {
   if (typeof window === 'undefined') return;
 
-  // Prevent multiple initializations
+  // Prevent multiple initializations if already loaded in index.html
   if (window.fbq) return;
 
   /* eslint-disable */
@@ -43,7 +43,7 @@ export const initFacebookPixel = () => {
 export const trackPixelEvent = (eventName, params = {}) => {
   if (typeof window === 'undefined') return;
 
-  if (window.fbq && FB_PIXEL_ID) {
+  if (window.fbq) {
     window.fbq('track', eventName, params);
   } else if (import.meta.env.DEV) {
     console.log(`[Meta Pixel Event: ${eventName}]`, params);
@@ -128,3 +128,4 @@ export const trackContact = (channel = 'WhatsApp') => {
     channel: channel
   });
 };
+
