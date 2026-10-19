@@ -88,18 +88,18 @@ export const translations = {
         "Professional architecture & MEP specialized workflows",
         "Desktop, web, and mobile cross-platform workflows"
       ],
-      subscriptionTitle: "1 Year / 3 Years Subscription",
-      priceLabel: "Price:",
-      priceValue: "৳ XX,XXX",
+      subscriptionTitle: "1 / 2 / 3 Years Subscription",
+      priceLabel: "Starts at:",
+      priceValue: "৳ 699",
       primaryCta: "Get AutoCAD →",
       specialistPrompt: "Need help choosing a plan?",
       specialistAction: "Talk to an Autodesk specialist"
     },
 
-    // Subscription Duration Options (Only 1 Year & 3 Years)
+    // Subscription Duration Options (1 Year, 2 Years & 3 Years)
     subscriptions: {
       heading: "Choose Your Subscription",
-      subtitle: "Select between our official 1 Year or long-term 3 Years subscription plan.",
+      subtitle: "Select between our official 1 Year, 2 Years, or 3 Years subscription plans.",
       orderThisPlan: "Select Plan →"
     },
 
@@ -342,18 +342,18 @@ export const translations = {
         "আর্কিটেকচারাল ও এমইপি বিশেষায়িত টুলসেট",
         "ডেস্কটপ, ওয়েব ও মোবাইলে ক্রস-প্ল্যাটফর্ম সুবিধা"
       ],
-      subscriptionTitle: "১ বছর ও ৩ বছর মেয়াদী সাবস্ক্রিপশন",
-      priceLabel: "মূল্য:",
-      priceValue: "৳ XX,XXX",
+      subscriptionTitle: "১ / ২ / ৩ বছর মেয়াদী সাবস্ক্রিপশন",
+      priceLabel: "শুরু মাত্র:",
+      priceValue: "৳ 699",
       primaryCta: "অটোক্যাড অর্ডার করুন →",
       specialistPrompt: "সঠিক প্ল্যান বেছে নিতে দ্বিধায় আছেন?",
       specialistAction: "অটোডেস্ক বিশেষজ্ঞের সাথে কথা বলুন"
     },
 
-    // Subscription Duration Options (Only 1 Year & 3 Years)
+    // Subscription Duration Options (1 Year, 2 Years & 3 Years)
     subscriptions: {
       heading: "সাবস্ক্রিপশন মেয়াদ নির্বাচন করুন",
-      subtitle: "আপনার প্রজেক্টের সময়সীমা অনুযায়ী ১ বছর অথবা ৩ বছর মেয়াদী সাবস্ক্রিপশন বেছে নিন।",
+      subtitle: "আপনার প্রজেক্টের সময়সীমা অনুযায়ী ১ বছর, ২ বছর অথবা ৩ বছর মেয়াদী সাবস্ক্রিপশন বেছে নিন।",
       orderThisPlan: "এই প্ল্যানটি নির্বাচন করুন →"
     },
 

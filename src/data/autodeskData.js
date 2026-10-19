@@ -14,8 +14,8 @@ export const autodeskProducts = [
     idealForBn: "আর্কিটেক্ট • ইঞ্জিনিয়ার • ডিজাইনার",
     icon: "PenTool",
     color: "from-red-600 to-amber-600",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Precise 2D drafting and annotation tools",
@@ -45,8 +45,8 @@ export const autodeskProducts = [
     idealForBn: "আর্কিটেক্ট • স্ট্রাকচারাল ইঞ্জিনিয়ার • এমইপি টিম",
     icon: "Building2",
     color: "from-blue-600 to-cyan-600",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Parametric 3D building components and families",
@@ -76,8 +76,8 @@ export const autodeskProducts = [
     idealForBn: "৩ডি আর্টিস্ট • ইন্টেরিয়র ডিজাইনার • গেম ডেভেলপার",
     icon: "Box",
     color: "from-cyan-600 to-teal-500",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Integrated Arnold photorealistic render engine",
@@ -107,8 +107,8 @@ export const autodeskProducts = [
     idealForBn: "অ্যানিমেটর • ভিএফএক্স স্পেশালিস্ট • ফিল্ম স্টুডিও",
     icon: "Video",
     color: "from-teal-600 to-emerald-600",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Bifrost procedural visual effects system",
@@ -138,8 +138,8 @@ export const autodeskProducts = [
     idealForBn: "প্রোডাক্ট ডিজাইনার • মেশিনিস্ট • মেকানিক্যাল ইঞ্জিনিয়ার",
     icon: "Cpu",
     color: "from-amber-600 to-orange-500",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Complete CAD, CAM (2.5 to 5-axis), and CAE simulation",
@@ -169,8 +169,8 @@ export const autodeskProducts = [
     idealForBn: "সিভিল ইঞ্জিনিয়ার • সার্ভেয়ার • নগর পরিকল্পনাবিদ",
     icon: "MapPin",
     color: "from-indigo-600 to-blue-500",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Dynamic road corridor and grading modeling",
@@ -200,8 +200,8 @@ export const autodeskProducts = [
     idealForBn: "মেকানিক্যাল ইঞ্জিনিয়ার • মেশিন নির্মাতা • ফ্যাব্রিকেটর",
     icon: "Wrench",
     color: "from-orange-600 to-amber-700",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Parametric, direct, and freeform 3D modeling",
@@ -231,8 +231,8 @@ export const autodeskProducts = [
     idealForBn: "বিআইএম ম্যানেজার • জেনারেল ঠিকাদার • প্রজেক্ট লিড",
     icon: "Layers",
     color: "from-blue-700 to-indigo-800",
-    durations: ["1 Year", "3 Years"],
-    priceDisplay: "৳ XX,XXX",
+    durations: ["1 Year", "2 Years", "3 Years"],
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     features: [
       "Comprehensive multi-source clash detection",
@@ -582,7 +582,7 @@ export const autodeskSixCategories = [
     shortName: "Architecture & BIM Suite",
     tagline: "Revit, Civil 3D, AutoCAD, Navisworks Manage, Advance Steel & Forma",
     taglineBn: "রেভিট, সিভিল ৩ডি, অটোক্যাড, নেভিসওয়ার্কস ও অ্যাডভান্স স্টিল কালেকশন",
-    priceDisplay: "৳ XX,XXX",
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     matchKeywords: ["aec", "architecture", "building", "civil", "revit", "forma", "c3d", "navisworks", "steel", "infra"]
   },
@@ -593,7 +593,7 @@ export const autodeskSixCategories = [
     shortName: "AutoCAD 7 Toolsets",
     tagline: "Architecture, Electrical, Mechanical, Map 3D, MEP, Plant 3D & Raster",
     taglineBn: "আর্কিটেকচার, ইলেকট্রিক্যাল, মেকানিক্যাল, এমইপি ও প্ল্যান্ট ৩ডি সহ ৭টি টুলসেট",
-    priceDisplay: "৳ XX,XXX",
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     matchKeywords: ["autocad", "toolset", "cad", "specialized", "drafting"]
   },
@@ -604,7 +604,7 @@ export const autodeskSixCategories = [
     shortName: "Manufacturing & CAM Suite",
     tagline: "Inventor Pro, Fusion 360, CAM, Nastran, Tolerance & FeatureCAM",
     taglineBn: "ইনভেন্টর, ফিউশন ৩৬০, সিএএম, ন্যাস্ট্রান ও ম্যানুফ্যাকচারিং টুলস",
-    priceDisplay: "৳ XX,XXX",
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     matchKeywords: ["mechanical", "manufacturing", "inventor", "fusion", "cam", "nastran", "pdm", "factory", "machining"]
   },
@@ -615,7 +615,7 @@ export const autodeskSixCategories = [
     shortName: "Fabrication & Vault Suite",
     tagline: "Fabrication CADmep, CAMduct, ESTmep, Vault Pro & Desktop Connector",
     taglineBn: "ফ্যাব্রিকেশন ক্যাডমেপ, ক্যামডাক্ট, এস্টমেপ ও ভল্ট প্রফেশনাল সার্ভার",
-    priceDisplay: "৳ XX,XXX",
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     matchKeywords: ["fabrication", "vault", "camduct", "cadmep", "estmep", "connector"]
   },
@@ -626,7 +626,7 @@ export const autodeskSixCategories = [
     shortName: "Media & 3D VFX Suite",
     tagline: "3ds Max, Maya, Arnold Render, Flame, Mudbox, VRED & MotionBuilder",
     taglineBn: "থ্রিডিএস ম্যাক্স, মায়া, আর্নল্ড রেন্ডার, ফ্লেম ও মাডবক্স ভিজ্যুয়ালাইজেশন",
-    priceDisplay: "৳ XX,XXX",
+    priceDisplay: "৳ 699",
     defaultDuration: "1 Year",
     matchKeywords: ["3ds max", "maya", "animation", "vfx", "sculpting", "visualization", "arnold", "flame", "media", "mudbox"]
   },
