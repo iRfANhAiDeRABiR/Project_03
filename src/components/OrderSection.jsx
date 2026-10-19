@@ -14,6 +14,7 @@ import {
   Tag,
   X
 } from 'lucide-react';
+import { trackInitiateCheckout } from '../services/pixelService';
 
 export default function OrderSection() {
   const {
@@ -169,6 +170,7 @@ export default function OrderSection() {
         requirements: requirements
       };
       setIsSubmitting(false);
+      trackInitiateCheckout(orderPayload);
       startPayment(orderPayload);
     }, 400);
   };

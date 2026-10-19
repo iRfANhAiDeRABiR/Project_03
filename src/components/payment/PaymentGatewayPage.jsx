@@ -25,6 +25,7 @@ import {
   Sparkles,
   RotateCcw
 } from 'lucide-react';
+import { trackAddPaymentInfo, trackPurchase, trackContact } from '../../services/pixelService';
 
 export default function PaymentGatewayPage({ order, onCancel }) {
   const method = order?.paymentMethod || 'Bkash'; // 'Bkash' | 'Nagad' | 'Rocket'
@@ -107,6 +108,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
       return;
     }
     setError('');
+    trackAddPaymentInfo(method);
     setStep(2);
   };
 
@@ -147,6 +149,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
       console.warn("Storage error", err);
     }
 
+    trackPurchase(customerPayload);
     setVerificationStatus('PENDING');
     setStep(3);
 
@@ -753,6 +756,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackContact('WhatsApp')}
                   className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-white shadow-md transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
