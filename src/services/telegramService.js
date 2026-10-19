@@ -44,6 +44,18 @@ export const autoDetectAdminChatId = async () => {
 };
 
 /**
+ * Sanitizes strings for Telegram HTML parse_mode to prevent parsing errors and HTML injection
+ */
+export const escapeHtml = (text) => {
+  if (text === null || text === undefined) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+};
+
+/**
  * Sends full order details to the Telegram Bot with formatted HTML
  */
 export const sendOrderToTelegram = async (orderPayload) => {
@@ -66,23 +78,41 @@ export const sendOrderToTelegram = async (orderPayload) => {
     };
   }
 
+  // Sanitize all user inputs before inserting into Telegram HTML template
+  const safeRefId = escapeHtml(orderPayload.refId || 'N/A');
+  const safeName = escapeHtml(orderPayload.name || 'N/A');
+  const safeEmail = escapeHtml(orderPayload.email || 'N/A');
+  const safePhone = escapeHtml(orderPayload.phone || 'N/A');
+  const safeProduct = escapeHtml(orderPayload.product || 'Autodesk All Apps');
+  const safeDuration = escapeHtml(orderPayload.duration || '1 Year');
+  const safeQuantity = escapeHtml(orderPayload.quantity || 1);
+  const safeTotalPrice = escapeHtml(orderPayload.totalPrice || '৳ 699');
+  const safeCoupon = orderPayload.couponApplied ? escapeHtml(orderPayload.couponApplied) : null;
+  const safeDiscount = orderPayload.discountAmount ? escapeHtml(orderPayload.discountAmount) : null;
+  const safeGateway = escapeHtml(orderPayload.paymentMethod || 'bKash');
+  const safeSender = escapeHtml(orderPayload.senderNumber || 'N/A');
+  const safeReceiver = escapeHtml(orderPayload.receiverNumber || 'N/A');
+  const safeTrxId = escapeHtml(orderPayload.trxId || 'N/A');
+
+  const couponLine = safeCoupon ? `\n🏷️ <b>Coupon:</b> <code>${safeCoupon}</code> (-10%, saved ${safeDiscount})` : '';
+
   const messageText = `
 🔔 <b>NEW AUTODESK ORDER SUBMISSION</b>
 ━━━━━━━━━━━━━━━━━━━━━
-📋 <b>Order Ref:</b> <code>${orderPayload.refId || 'N/A'}</code>
-👤 <b>Customer:</b> <b>${orderPayload.name || 'N/A'}</b>
-📧 <b>Delivery Email:</b> <code>${orderPayload.email || 'N/A'}</code>
-📱 <b>Customer Phone:</b> <code>${orderPayload.phone || 'N/A'}</code>
+📋 <b>Order Ref:</b> <code>${safeRefId}</code>
+👤 <b>Customer:</b> <b>${safeName}</b>
+📧 <b>Delivery Email:</b> <code>${safeEmail}</code>
+📱 <b>Customer Phone:</b> <code>${safePhone}</code>
 ━━━━━━━━━━━━━━━━━━━━━
-📦 <b>Product:</b> ${orderPayload.product || 'Autodesk All Apps'}
-⏳ <b>Duration:</b> ${orderPayload.duration || '1 Year'}
-🪑 <b>Seats/Qty:</b> ${orderPayload.quantity || 1} Seat(s)
-💰 <b>Total Amount:</b> <b>${orderPayload.totalPrice || '৳ 699'}</b>${orderPayload.couponApplied ? `\n🏷️ <b>Coupon:</b> <code>${orderPayload.couponApplied}</code> (-10%, saved ${orderPayload.discountAmount})` : ''}
+📦 <b>Product:</b> ${safeProduct}
+⏳ <b>Duration:</b> ${safeDuration}
+🪑 <b>Seats/Qty:</b> ${safeQuantity} Seat(s)
+💰 <b>Total Amount:</b> <b>${safeTotalPrice}</b>${couponLine}
 ━━━━━━━━━━━━━━━━━━━━━
-💳 <b>Payment Gateway:</b> <b>${orderPayload.paymentMethod || 'bKash'}</b>
-📤 <b>Sender Number:</b> <code>${orderPayload.senderNumber || 'N/A'}</code>
-📥 <b>Receiver Number:</b> <code>${orderPayload.receiverNumber || 'N/A'}</code>
-🔑 <b>Transaction ID (TrxID):</b> <code>${orderPayload.trxId || 'N/A'}</code>
+💳 <b>Payment Gateway:</b> <b>${safeGateway}</b>
+📤 <b>Sender Number:</b> <code>${safeSender}</code>
+📥 <b>Receiver Number:</b> <code>${safeReceiver}</code>
+🔑 <b>Transaction ID (TrxID):</b> <code>${safeTrxId}</code>
 ⏰ <b>Time:</b> ${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Dhaka' })}
 ━━━━━━━━━━━━━━━━━━━━━
 Status: ⏳ <b>PENDING MANUAL VERIFICATION</b>
