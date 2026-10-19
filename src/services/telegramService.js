@@ -115,7 +115,7 @@ export const sendOrderToTelegram = async (orderPayload) => {
 🔑 <b>Transaction ID (TrxID):</b> <code>${safeTrxId}</code>
 ⏰ <b>Time:</b> ${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Dhaka' })}
 ━━━━━━━━━━━━━━━━━━━━━
-Status: ⏳ <b>PENDING MANUAL VERIFICATION</b>
+Status: ⏳ <b>PENDING VERIFICATION</b>
 `.trim();
 
   try {

@@ -428,7 +428,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                 {/* Official Verification Badge */}
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/30 bg-white/20 text-white backdrop-blur-sm text-xs font-bold">
                   <ShieldCheck className="w-4 h-4 text-emerald-300" />
-                  <span>Manual Verification</span>
+                  <span>Official Verification</span>
                 </div>
               </div>
 
@@ -655,7 +655,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                   <div>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-400 text-slate-950 shadow-xs mb-2">
                       <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
-                      <span>ম্যানুয়াল ভেরিফিকেশন চলছে (Verification In Progress)</span>
+                      <span>ভেরিফিকেশন চলছে (Verification In Progress)</span>
                     </span>
                     <h3 className="text-xl sm:text-2xl font-black text-white">
                       Payment Submitted Successfully!
