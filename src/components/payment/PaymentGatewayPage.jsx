@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { BkashLogo, NagadLogo, RocketLogo } from '../common/PaymentLogos';
 import {
+  sendOrderToTelegram,
+  autoDetectAdminChatId,
+  getAdminChatId,
+  setAdminChatId
+} from '../../services/telegramService';
+import {
   Copy,
   CheckCircle2,
-  Clock,
   AlertTriangle,
   ArrowLeft,
   ShieldCheck,
@@ -11,7 +16,10 @@ import {
   Check,
   ExternalLink,
   MessageCircle,
-  HelpCircle
+  HelpCircle,
+  Send,
+  Bell,
+  RefreshCw
 } from 'lucide-react';
 
 export default function PaymentGatewayPage({ order, onCancel }) {
@@ -63,32 +71,11 @@ export default function PaymentGatewayPage({ order, onCancel }) {
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [error, setError] = useState('');
   const [copiedField, setCopiedField] = useState(null);
-
-  // 2 Minutes Timer (120 seconds countdown)
-  const [timeLeft, setTimeLeft] = useState(120);
-  const [timerExpired, setTimerExpired] = useState(false);
-
-  useEffect(() => {
-    if (step === 2 && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            setTimerExpired(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [step, timeLeft]);
-
-  const formatTimer = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  
+  // Telegram Bot integration state
+  const [telegramStatus, setTelegramStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'no_chat_id' | 'failed'
+  const [isDetectingChatId, setIsDetectingChatId] = useState(false);
+  const [customChatId, setCustomChatId] = useState(getAdminChatId());
 
   const handleCopy = (text, fieldName) => {
     navigator.clipboard.writeText(text);
@@ -110,11 +97,10 @@ export default function PaymentGatewayPage({ order, onCancel }) {
     }
     setError('');
     setStep(2);
-    setTimeLeft(120); // start 2 minutes countdown
   };
 
-  // Step 2 Validation -> Proceed to Step 3 (Pending verification ready for Telegram bot)
-  const handleConfirmTrx = (e) => {
+  // Step 2 Validation -> Send to Telegram Bot & Proceed to Step 3
+  const handleConfirmTrx = async (e) => {
     if (e) e.preventDefault();
     if (!trxId.trim() || trxId.trim().length < 6) {
       setError('দয়া করে সঠিক Transaction ID (TrxID) লিখুন');
@@ -148,6 +134,36 @@ export default function PaymentGatewayPage({ order, onCancel }) {
     }
 
     setStep(3);
+
+    // Send order to Telegram Bot automatically
+    setTelegramStatus('sending');
+    const teleRes = await sendOrderToTelegram(customerPayload);
+    if (teleRes.success) {
+      setTelegramStatus('sent');
+    } else if (teleRes.reason === 'NO_CHAT_ID') {
+      setTelegramStatus('no_chat_id');
+    } else {
+      setTelegramStatus('failed');
+    }
+  };
+
+  // Helper to connect Telegram Bot if not yet connected
+  const handleConnectTelegram = async () => {
+    setIsDetectingChatId(true);
+    const result = await autoDetectAdminChatId();
+    setIsDetectingChatId(false);
+    if (result) {
+      setCustomChatId(result.chatId);
+      // Retry sending current order
+      const saved = localStorage.getItem('ecosafeguard_last_submission');
+      if (saved) {
+        setTelegramStatus('sending');
+        const res = await sendOrderToTelegram(JSON.parse(saved));
+        setTelegramStatus(res.success ? 'sent' : 'failed');
+      }
+    } else {
+      alert("Please open t.me/ecosafeguard_bot in Telegram, tap Start or send a message, then click this button again!");
+    }
   };
 
   return (
@@ -319,12 +335,12 @@ export default function PaymentGatewayPage({ order, onCancel }) {
           )}
 
           {/* =======================================================================
-              STEP 2: SEND MONEY DETAILS, 2-MINUTE TIMER & ENTER TRXID
+              STEP 2: SEND MONEY DETAILS & ENTER TRXID (TIMER REMOVED)
              ======================================================================= */}
           {step === 2 && (
             <div className="space-y-4 animate-in fade-in duration-200">
               
-              {/* Header with 2-Minute Timer */}
+              {/* Header with Clean Trust Badge (No timer) */}
               <div className="flex items-center justify-between pb-3 border-b border-white/20">
                 <div>
                   <span className="text-[11px] font-bold text-white/80 uppercase tracking-wide block">
@@ -335,16 +351,10 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                   </h3>
                 </div>
                 
-                {/* 2-Minute Live Timer */}
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border backdrop-blur-sm ${
-                  timeLeft < 30
-                    ? 'bg-rose-500/30 border-rose-400 text-rose-100 animate-pulse'
-                    : 'bg-white/20 border-white/30 text-white'
-                }`}>
-                  <Clock className="w-4 h-4" />
-                  <span className="font-mono font-black text-sm tracking-widest">
-                    {formatTimer(timeLeft)}
-                  </span>
+                {/* Official Verification Badge */}
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/30 bg-white/20 text-white backdrop-blur-sm text-xs font-bold">
+                  <ShieldCheck className="w-4 h-4 text-emerald-300" />
+                  <span>Manual Verification</span>
                 </div>
               </div>
 
@@ -474,13 +484,12 @@ export default function PaymentGatewayPage({ order, onCancel }) {
           )}
 
           {/* =======================================================================
-              STEP 3: VERIFICATION SUBMITTED / PENDING STATUS
-              (Ready for Telegram Bot Manual Verification of Confirm/Pending/Invalid)
+              STEP 3: VERIFICATION SUBMITTED + TELEGRAM BOT REALTIME STATUS
              ======================================================================= */}
           {step === 3 && (
-            <div className="space-y-5 animate-in fade-in duration-200 text-center">
+            <div className="space-y-4 animate-in fade-in duration-200 text-center">
               
-              {/* Animated Status Icon */}
+              {/* Status Header */}
               <div className="w-16 h-16 rounded-full bg-white text-emerald-600 flex items-center justify-center mx-auto shadow-xl ring-4 ring-white/30">
                 <CheckCircle2 className="w-10 h-10 animate-bounce" />
               </div>
@@ -496,6 +505,61 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                 <p className="text-xs text-white/90 mt-1 leading-relaxed max-w-sm mx-auto">
                   আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে। আমাদের টিম Transaction ID যাচাই করে ৫-১৫ মিনিটের মধ্যে আপনার ইমেইলে ইনভাইটেশন পাঠিয়ে দেবে।
                 </p>
+              </div>
+
+              {/* Telegram Delivery Notification Banner */}
+              <div className="rounded-2xl bg-white/10 border border-white/20 p-3.5 text-left text-xs text-white space-y-2">
+                <div className="flex items-center justify-between font-bold">
+                  <span className="flex items-center gap-1.5">
+                    <Send className="w-3.5 h-3.5 text-cyan-300" />
+                    <span>Telegram Alert Status:</span>
+                  </span>
+                  
+                  {telegramStatus === 'sending' && (
+                    <span className="text-cyan-200 flex items-center gap-1">
+                      <RefreshCw className="w-3 h-3 animate-spin" /> Sending...
+                    </span>
+                  )}
+                  {telegramStatus === 'sent' && (
+                    <span className="text-emerald-300 flex items-center gap-1 font-bold">
+                      <Check className="w-3.5 h-3.5" /> Sent to @ecosafeguard_bot
+                    </span>
+                  )}
+                  {telegramStatus === 'no_chat_id' && (
+                    <span className="text-amber-200 font-bold">Bot Ready (Tap Connect)</span>
+                  )}
+                  {telegramStatus === 'failed' && (
+                    <span className="text-rose-200 font-bold">Pending Delivery</span>
+                  )}
+                </div>
+
+                {telegramStatus === 'no_chat_id' && (
+                  <div className="pt-2 border-t border-white/20 text-[11px] text-white/90 space-y-2">
+                    <p>
+                      আপনার টেলিগ্রাম একাউন্টে সরাসরি অর্ডার অ্যালার্ট পেতে নীচের লিংকে ক্লিক করে বটে <strong>Start</strong> চাপুন:
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href="https://t.me/ecosafeguard_bot"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs inline-flex items-center gap-1 shadow-sm"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        <span>Open @ecosafeguard_bot</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={handleConnectTelegram}
+                        disabled={isDetectingChatId}
+                        className="px-3 py-1.5 rounded-lg bg-white text-slate-900 font-bold text-xs inline-flex items-center gap-1 shadow-sm hover:bg-slate-100"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${isDetectingChatId ? 'animate-spin' : ''}`} />
+                        <span>Connect & Sync</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Customer & Transaction Receipt Card */}
