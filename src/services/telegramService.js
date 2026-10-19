@@ -110,10 +110,135 @@ Status: ⏳ <b>PENDING MANUAL VERIFICATION</b>
     });
 
     const result = await response.json();
-    return { success: result.ok, data: result };
+    return { 
+      success: result.ok, 
+      data: result,
+      messageId: result.result?.message_id || null
+    };
   } catch (err) {
     console.error("Error dispatching order to Telegram:", err);
     return { success: false, error: err };
   }
+};
+
+/**
+ * Acknowledges a Telegram callback query to clear button loading state
+ */
+export const answerTelegramCallback = async (callbackQueryId, text = "Status updated") => {
+  if (!TELEGRAM_BOT_TOKEN || !callbackQueryId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        callback_query_id: callbackQueryId,
+        text: text,
+        show_alert: false
+      })
+    });
+  } catch (err) {
+    // Ignore expired or already answered callback errors
+  }
+};
+
+/**
+ * Updates inline buttons on the Telegram notification message to reflect current status
+ */
+export const updateTelegramMessageStatus = async (chatId, messageId, status, orderRefId) => {
+  if (!TELEGRAM_BOT_TOKEN || !chatId || !messageId) return;
+  try {
+    const isConfirmed = status === 'CONFIRMED';
+    const inline_keyboard = isConfirmed
+      ? [
+          [
+            { text: "✅ Confirmed (যাচাই সম্পন্ন)", callback_data: `confirmed_done_${orderRefId}` },
+            { text: "🔄 ভুল হলে Invalid করুন", callback_data: `invalid_${orderRefId}` }
+          ]
+        ]
+      : [
+          [
+            { text: "❌ Invalid TrxID (বাতিল)", callback_data: `invalid_done_${orderRefId}` },
+            { text: "🔄 সঠিক হলে Confirm করুন", callback_data: `confirm_${orderRefId}` }
+          ]
+        ];
+
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        message_id: messageId,
+        reply_markup: { inline_keyboard }
+      })
+    });
+  } catch (err) {
+    console.error("Error updating Telegram message markup:", err);
+  }
+};
+
+// Set to avoid redundant callback acknowledgments
+const processedCallbacks = new Set();
+
+/**
+ * Polls Telegram updates to check if the admin clicked Confirm or Invalid
+ * for a specific order reference ID.
+ * Returns: { status: 'PENDING' | 'CONFIRMED' | 'INVALID', verifiedBy?: string, verifiedAt?: Date }
+ */
+export const checkOrderStatusFromTelegram = async (orderRefId) => {
+  if (!orderRefId || !TELEGRAM_BOT_TOKEN) {
+    return { status: 'PENDING' };
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
+    const data = await res.json();
+
+    if (data.ok && Array.isArray(data.result)) {
+      // Traverse backwards from newest update to find the latest action on this order
+      for (let i = data.result.length - 1; i >= 0; i--) {
+        const update = data.result[i];
+        const cb = update.callback_query;
+        if (!cb || !cb.data) continue;
+
+        const isConfirm = cb.data === `confirm_${orderRefId}` || cb.data === `confirmed_done_${orderRefId}`;
+        const isInvalid = cb.data === `invalid_${orderRefId}` || cb.data === `invalid_done_${orderRefId}`;
+
+        if (isConfirm || isInvalid) {
+          const finalStatus = isConfirm ? 'CONFIRMED' : 'INVALID';
+
+          // Acknowledge callback and update buttons in Telegram if not yet processed
+          if (!processedCallbacks.has(cb.id)) {
+            processedCallbacks.add(cb.id);
+            answerTelegramCallback(
+              cb.id,
+              isConfirm ? `✅ Order #${orderRefId} Confirmed!` : `❌ Order #${orderRefId} marked as Invalid!`
+            ).catch(() => {});
+
+            if (cb.message?.chat?.id && cb.message?.message_id) {
+              updateTelegramMessageStatus(
+                cb.message.chat.id,
+                cb.message.message_id,
+                finalStatus,
+                orderRefId
+              ).catch(() => {});
+            }
+          }
+
+          return {
+            status: finalStatus,
+            verifiedBy: cb.from?.first_name || 'Admin',
+            verifiedAt: new Date(cb.message?.date ? cb.message.date * 1000 : Date.now()),
+            note: isConfirm
+              ? "Payment verified by administrator on Telegram."
+              : "Transaction ID was marked invalid by administrator on Telegram."
+          };
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error checking order status from Telegram:", err);
+  }
+
+  return { status: 'PENDING' };
 };
 
