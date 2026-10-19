@@ -86,8 +86,8 @@ export const faqData = [
     categoryBn: "সাপোর্ট",
     question: "How can I contact customer support?",
     questionBn: "কাস্টমার সাপোর্টে কীভাবে যোগাযোগ করব?",
-    answer: "You can reach our dedicated support desk anytime via our floating WhatsApp button on this site, call our customer hotline at +880 1700-000000, email us at support@ecosafeguard.tech, or send a message through the contact form on this page. We respond promptly!",
-    answerBn: "আমাদের সাথে যোগাযোগ করা খুব সহজ: স্ক্রিনের নিচে ডানদিকের WhatsApp বাটনে ক্লিক করুন, সরাসরি ফোন করুন আমাদের হেল্পলাইনে (+880 1700-000000), অথবা support@ecosafeguard.tech এ ইমেইল করুন।"
+    answer: "You can reach our dedicated support desk anytime via our floating WhatsApp button on this site, call our customer hotline at +63 955 250 6023, email us at support@ecosafeguard.shop, or send a message through the contact form on this page. We respond promptly!",
+    answerBn: "আমাদের সাথে যোগাযোগ করা খুব সহজ: স্ক্রিনের নিচে ডানদিকের WhatsApp বাটনে ক্লিক করুন, সরাসরি যোগাযোগ করুন আমাদের হেল্পলাইনে (+৬৩ ৯৫৫ ২৫০ ৬০২৩), অথবা support@ecosafeguard.shop এ ইমেইল করুন।"
   }
 ];
 
