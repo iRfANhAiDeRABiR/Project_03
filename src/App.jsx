@@ -5,12 +5,10 @@ import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import TrustBadges from './components/TrustBadges';
 import ProductCategories from './components/ProductCategories';
-import FeaturedAutoCAD from './components/FeaturedAutoCAD';
 import SubscriptionPlans from './components/SubscriptionPlans';
 import CrackedVsOfficial from './components/CrackedVsOfficial';
 import PreOrderDoubts from './components/PreOrderDoubts';
 import WhyChooseUs from './components/WhyChooseUs';
-import SecuritySection from './components/SecuritySection';
 import HowItWorks from './components/HowItWorks';
 import OrderSection from './components/OrderSection';
 import FAQ from './components/FAQ';
@@ -40,25 +38,19 @@ function LandingPage() {
         {/* 5. Product Category Section (6 Categories: BIM, CAD Toolsets, Manufacturing, Vault, 3D VFX, All Apps) */}
         <ProductCategories />
 
-        {/* 6. Featured AutoCAD Spotlight Section */}
-        <FeaturedAutoCAD />
-
-        {/* 7. Subscription Duration Options (1 Year & 3 Years) */}
+        {/* 6. Subscription Duration Options (1, 2 & 3 Years) */}
         <SubscriptionPlans />
 
-        {/* 8. Cracked vs Official Subscription Comparison (Security & Risk Warning) */}
+        {/* 7. Cracked vs Official Subscription Comparison (Security & Risk Warning) */}
         <CrackedVsOfficial />
 
-        {/* 9. Pre-Order Common Doubts & Buyer Transparency Section */}
+        {/* 8. Pre-Order Common Doubts & Buyer Transparency Section */}
         <PreOrderDoubts />
 
-        {/* 10. Why Ecosafeguard Technology */}
+        {/* 9. Why Ecosafeguard Technology */}
         <WhyChooseUs />
 
-        {/* 11. Trust / Authenticity & Subscription Advisory Section */}
-        <SecuritySection />
-
-        {/* 12. How to Order (4-Step Installation Guide & Replacement Guarantee on White BG) */}
+        {/* 10. How to Order (4-Step Installation Guide & Replacement Guarantee on White BG) */}
         <HowItWorks />
 
         {/* 13. Autodesk Order Form (Default: Autodesk All Apps) */}
