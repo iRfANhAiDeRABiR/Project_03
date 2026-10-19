@@ -6,7 +6,7 @@ export default function FloatingContactButton() {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
 
-  const whatsappNumber = "+8801700000000";
+  const whatsappNumber = "639552506023";
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">

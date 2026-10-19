@@ -664,28 +664,6 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                       আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে। টেলিগ্রাম বট থেকে কনফার্ম হওয়া মাত্রই এই স্ক্রিন স্বয়ংক্রিয়ভাবে আপডেট হবে।
                     </p>
                   </div>
-
-                  {/* Live Bot Sync Status Banner */}
-                  <div className="rounded-2xl bg-white/10 border border-white/20 p-3 text-left text-xs text-white flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                      </span>
-                      <span className="text-[11px] font-medium text-emerald-200">
-                        Live Bot Sync Active • বট থেকে অ্যাকশন মনিটর করা হচ্ছে
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleManualCheck}
-                      disabled={isCheckingLive}
-                      className="px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-[10px] inline-flex items-center gap-1"
-                    >
-                      <RefreshCw className={`w-2.5 h-2.5 ${isCheckingLive ? 'animate-spin' : ''}`} />
-                      <span>চেক করুন</span>
-                    </button>
-                  </div>
                 </div>
               )}
 
@@ -770,7 +748,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                 )}
 
                 <a
-                  href={`https://wa.me/8801700000000?text=${encodeURIComponent(
+                  href={`https://wa.me/639552506023?text=${encodeURIComponent(
                     `Hello Ecosafeguard, Order Ref: ${activeRefId || order?.refId}. Method: ${method}, Sender: ${senderNumber}, TrxID: ${trxId}, Status: ${verificationStatus}, Amount: ${order?.totalPrice}`
                   )}`}
                   target="_blank"
