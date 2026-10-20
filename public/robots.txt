@@ -1,0 +1,19 @@
+# Ecosafeguard Technology Robots.txt
+# Controls web crawlers and prevents indexing of sensitive probe paths
+
+User-agent: *
+Disallow: /.env*
+Disallow: /.git*
+Disallow: /server-status
+Disallow: /admin*
+Disallow: /wp-admin*
+Disallow: /private/
+Disallow: /config/
+Disallow: /*.php$
+Disallow: /*.sql$
+Disallow: /*.bak$
+Allow: /
+Allow: /assets/
+
+# Host
+Host: https://autodesk.ecosafeguard.shop

@@ -19,6 +19,7 @@ import Footer from './components/Footer';
 import FloatingContactButton from './components/FloatingContactButton';
 
 import PaymentGatewayPage from './components/payment/PaymentGatewayPage';
+import NotFoundPage from './components/NotFoundPage';
 import { useLanguage } from './context/LanguageContext';
 import { trackPageView } from './services/pixelService';
 
@@ -84,17 +85,41 @@ function LandingPage() {
 
 function AppContent() {
   const { activePaymentOrder, cancelPayment } = useLanguage();
+  const [currentPath, setCurrentPath] = React.useState(window.location.pathname);
   const [currentHash, setCurrentHash] = React.useState(window.location.hash);
 
   React.useEffect(() => {
     trackPageView();
-    const handleHashChange = () => {
+    const handleNavigation = () => {
+      setCurrentPath(window.location.pathname);
       setCurrentHash(window.location.hash);
       trackPageView();
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('hashchange', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    return () => {
+      window.removeEventListener('hashchange', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
+    };
   }, []);
+
+  const handleGoHome = (targetHash = '') => {
+    if (window.location.pathname !== '/' && window.location.pathname !== '') {
+      window.history.pushState({}, '', '/' + targetHash);
+    } else {
+      window.location.hash = targetHash;
+    }
+    setCurrentPath('/');
+    setCurrentHash(targetHash);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 404 Route Protection: Any route other than / or /index.html is a 404
+  const is404 = currentPath !== '/' && currentPath !== '/index.html' && currentPath !== '';
+
+  if (is404) {
+    return <NotFoundPage onGoHome={handleGoHome} />;
+  }
 
   if (currentHash === '#payment' && activePaymentOrder) {
     return (

@@ -146,10 +146,17 @@ export default function OrderSection() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!validate()) return;
 
     setIsSubmitting(true);
     setTimeout(() => {
+      // Security input sanitization
+      const cleanName = fullName.trim().replace(/[<>]/g, '').slice(0, 80);
+      const cleanEmail = email.trim().replace(/[<>]/g, '').slice(0, 100);
+      const cleanPhone = phone.trim().replace(/[^0-9+\s-]/g, '').slice(0, 25);
+      const cleanReq = requirements ? requirements.trim().replace(/[<>]/g, '').slice(0, 300) : '';
+
       const generatedRef = `ECO-ATD-${Math.floor(100000 + Math.random() * 900000)}`;
       const orderPayload = {
         refId: generatedRef,
@@ -158,16 +165,16 @@ export default function OrderSection() {
         duration: currentPlan.duration,
         quantity: parsedQty,
         paymentMethod: paymentMethod,
-        name: fullName,
-        email: email,
-        phone: phone,
+        name: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
         unitPrice: `৳ ${finalUnitPrice.toLocaleString()}`,
         totalPrice: totalPriceDisplay,
         rawPrice: finalTotalPrice.toLocaleString(),
         basePrice: `৳ ${baseTotalPrice.toLocaleString()}`,
         couponApplied: appliedCoupon || null,
         discountAmount: appliedCoupon ? `৳ ${discountAmount.toLocaleString()}` : null,
-        requirements: requirements
+        requirements: cleanReq
       };
       setIsSubmitting(false);
       trackInitiateCheckout(orderPayload);

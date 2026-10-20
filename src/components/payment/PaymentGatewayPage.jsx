@@ -115,7 +115,10 @@ export default function PaymentGatewayPage({ order, onCancel }) {
   // Step 2 Validation -> Send to Telegram Bot & Proceed to Step 3
   const handleConfirmTrx = async (e) => {
     if (e) e.preventDefault();
-    if (!trxId.trim() || trxId.trim().length < 6) {
+    const cleanTrx = trxId.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30).toUpperCase();
+    const cleanSender = senderNumber.trim().replace(/[^0-9+\s-]/g, '').slice(0, 20);
+
+    if (!cleanTrx || cleanTrx.length < 6) {
       setError('দয়া করে সঠিক Transaction ID (TrxID) লিখুন');
       return;
     }
@@ -124,20 +127,20 @@ export default function PaymentGatewayPage({ order, onCancel }) {
     const targetRef = activeRefId || order?.refId || `ECO-ATD-${Math.floor(100000 + Math.random() * 900000)}`;
     if (!activeRefId) setActiveRefId(targetRef);
 
-    // Prepare complete payload ready for Telegram Bot
+    // Prepare complete sanitized payload ready for Telegram Bot
     const customerPayload = {
       refId: targetRef,
-      name: order?.name,
-      email: order?.email,
-      phone: order?.phone,
+      name: (order?.name || '').replace(/[<>]/g, '').slice(0, 80),
+      email: (order?.email || '').replace(/[<>]/g, '').slice(0, 100),
+      phone: (order?.phone || '').replace(/[^0-9+\s-]/g, '').slice(0, 25),
       product: order?.product || "Autodesk All Apps",
       duration: order?.duration || "1 Year",
       quantity: order?.quantity || 1,
       totalPrice: order?.totalPrice || "৳ 699",
       paymentMethod: method,
-      senderNumber: senderNumber,
+      senderNumber: cleanSender,
       receiverNumber: currentGateway.receiverNumber,
-      trxId: trxId.trim().toUpperCase(),
+      trxId: cleanTrx,
       status: "PENDING_VERIFICATION",
       submittedAt: new Date().toISOString()
     };

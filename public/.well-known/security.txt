@@ -1,0 +1,7 @@
+Contact: mailto:support@ecosafeguard.shop
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, bn
+Canonical: https://autodesk.ecosafeguard.shop/.well-known/security.txt
+Policy: https://autodesk.ecosafeguard.shop/#security
+Hiring: https://autodesk.ecosafeguard.shop/
+Acknowledgments: https://autodesk.ecosafeguard.shop/
