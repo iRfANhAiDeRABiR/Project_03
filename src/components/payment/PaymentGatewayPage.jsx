@@ -561,12 +561,9 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                   </div>
                 )}
                 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-slate-500 mt-2 gap-1">
-                  <span>টাকা পাঠানোর পর প্রাপ্ত SMS বা স্টেটমেন্টের TrxID দিন</span>
-                  {method === 'Bkash' && (
-                    <span className="font-mono font-bold text-[#e2136e]">ফরম্যাট: DJ + ৮টি অক্ষর/সংখ্যা (মোট ১০টি)</span>
-                  )}
-                </div>
+                <p className="text-[10px] text-slate-500 mt-2">
+                  টাকা পাঠানোর পর প্রাপ্ত SMS বা স্টেটমেন্টের Transaction ID (TrxID) দিন
+                </p>
               </div>
 
               {/* Action Buttons */}
