@@ -1,10 +1,10 @@
 // Telegram Bot Service for Ecosafeguard Technology
 // Bot: t.me/ecosafeguard_bot
-export const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || "";
+export const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || "8715760080:AAHPOqTy1MoYWdxd7LzodB_-M4r_60SV0-M";
 
 // Retrieve saved Chat ID from environment, localStorage, or auto-detection
 export const getAdminChatId = () => {
-  return import.meta.env.VITE_TELEGRAM_CHAT_ID || localStorage.getItem('ecosafeguard_telegram_chat_id') || "";
+  return import.meta.env.VITE_TELEGRAM_CHAT_ID || localStorage.getItem('ecosafeguard_telegram_chat_id') || "8519777555";
 };
 
 export const setAdminChatId = (chatId) => {

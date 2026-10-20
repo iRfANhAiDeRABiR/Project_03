@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BkashLogo, NagadLogo, RocketLogo } from '../common/PaymentLogos';
 import {
   sendOrderToTelegram,
@@ -89,6 +89,11 @@ export default function PaymentGatewayPage({ order, onCancel }) {
   const [isCheckingLive, setIsCheckingLive] = useState(false);
   const [lastCheckTime, setLastCheckTime] = useState(null);
 
+  // Active refs for interval timers to avoid stale closure issues
+  const lastSubmittedPayloadRef = useRef(null);
+  const verificationStatusRef = useRef('PENDING');
+  verificationStatusRef.current = verificationStatus;
+
   const handleCopy = (text, fieldName) => {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldName);
@@ -175,6 +180,10 @@ export default function PaymentGatewayPage({ order, onCancel }) {
       console.warn("Storage error", err);
     }
 
+    // Cache in memory ref for recurring reminders
+    lastSubmittedPayloadRef.current = customerPayload;
+    verificationStatusRef.current = 'PENDING';
+
     trackPurchase(customerPayload);
     setVerificationStatus('PENDING');
     setStep(3);
@@ -231,47 +240,59 @@ export default function PaymentGatewayPage({ order, onCancel }) {
 
   // Recurring reminder: If no action (Confirm/Invalid) is taken on Telegram, resend alert every 15s for up to 2 mins
   useEffect(() => {
-    if (step !== 3 || verificationStatus !== 'PENDING') return;
+    if (step !== 3) return;
     const ref = activeRefId || order?.refId;
     if (!ref) return;
-
-    // Load customer payload for resending
-    let payload = null;
-    try {
-      const saved = localStorage.getItem('ecosafeguard_last_submission');
-      if (saved) payload = JSON.parse(saved);
-    } catch (e) {}
-
-    if (!payload) return;
 
     let reminderCount = 0;
     const maxReminders = 8; // 8 * 15s = 120s (2 minutes)
     const reminderIntervalMs = 15000; // 15 seconds
 
+    console.log(`⏱️ [Telegram Reminder Service Started] Waiting for admin action on order #${ref}. Will remind every 15s for 2 mins.`);
+
     const reminderTimer = setInterval(async () => {
-      // Check if status changed or max reached
-      if (verificationStatus !== 'PENDING' || reminderCount >= maxReminders) {
+      // 1. If admin confirmed or marked invalid, stop reminders immediately
+      if (verificationStatusRef.current !== 'PENDING') {
+        console.log(`✅ [Telegram Reminder Stopped] Order status changed to ${verificationStatusRef.current}`);
         clearInterval(reminderTimer);
         return;
       }
 
-      // Check live status from Telegram before sending reminder
-      try {
-        const check = await checkOrderStatusFromTelegram(ref);
-        if (check && (check.status === 'CONFIRMED' || check.status === 'INVALID')) {
-          setVerificationStatus(check.status);
-          setVerificationDetails(check);
-          clearInterval(reminderTimer);
-          return;
+      // 2. If max 2 minutes elapsed (8 reminders), stop
+      if (reminderCount >= maxReminders) {
+        console.log(`🛑 [Telegram Reminder Ended] 2 minutes limit reached for order #${ref}`);
+        clearInterval(reminderTimer);
+        return;
+      }
+
+      // 3. Resolve order payload from memory ref or fallback to localStorage
+      const payload = lastSubmittedPayloadRef.current || (() => {
+        try {
+          const saved = localStorage.getItem('ecosafeguard_last_submission');
+          return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+          return null;
         }
-      } catch (err) {}
+      })();
+
+      if (!payload) {
+        console.warn('⚠️ [Telegram Reminder] No payload found in memory or storage.');
+        return;
+      }
 
       reminderCount++;
-      await sendOrderToTelegram(payload, {
-        isReminder: true,
-        reminderIndex: reminderCount,
-        maxReminders: maxReminders
-      });
+      console.log(`📨 [Telegram Reminder #${reminderCount}/${maxReminders}] Resending alert for #${ref}...`);
+
+      try {
+        const res = await sendOrderToTelegram(payload, {
+          isReminder: true,
+          reminderIndex: reminderCount,
+          maxReminders: maxReminders
+        });
+        console.log(`📬 [Telegram Reminder #${reminderCount}] Result:`, res);
+      } catch (err) {
+        console.error(`❌ [Telegram Reminder #${reminderCount}] Error:`, err);
+      }
 
       if (reminderCount >= maxReminders) {
         clearInterval(reminderTimer);
@@ -281,7 +302,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
     return () => {
       clearInterval(reminderTimer);
     };
-  }, [step, verificationStatus, activeRefId, order?.refId]);
+  }, [step, activeRefId, order?.refId]);
 
   // Manual refresh trigger
   const handleManualCheck = async () => {
