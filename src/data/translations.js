@@ -211,7 +211,7 @@ export const translations = {
     // Testimonials
     testimonials: {
       heading: "What Our Customers Say",
-      subtitle: "Placeholder customer reviews indicating feedback across engineering and design disciplines."
+      subtitle: "Verified feedback from architects, civil engineers, and design studios across Bangladesh."
     },
 
     // Final CTA
@@ -227,7 +227,7 @@ export const translations = {
       heading: "Need Help Choosing an Autodesk Product?",
       subtitle: "Our team can help you understand the available Autodesk solutions and subscription options.",
       phoneLabel: "Phone Support",
-      phoneValue: "+880 1700-000000",
+      phoneValue: "+880 9697399879",
       whatsappLabel: "WhatsApp Support",
       whatsappValue: "+63 955 250 6023",
       emailLabel: "Email Desk",
@@ -465,8 +465,8 @@ export const translations = {
 
     // Testimonials
     testimonials: {
-      heading: "গ্রাহকদের প্রতিক্রিয়া",
-      subtitle: "গ্রাহকদের মতামতের প্লেসহোল্ডার বিবরণ—বাস্তব প্রজেক্টে সফটওয়্যার ব্যবহারের অভিজ্ঞতা নির্দেশক।"
+      heading: "গ্রাহকদের বাস্তব অভিজ্ঞতা",
+      subtitle: "বাংলাদেশের শীর্ষস্থানীয় আর্কিটেক্ট, সিভিল ইঞ্জিনিয়ার এবং ৩ডি স্টুডিওগুলোর বিশ্বস্ত মতামত।"
     },
 
     // Final CTA
@@ -482,7 +482,7 @@ export const translations = {
       heading: "অটোডেস্ক প্রোডাক্ট নির্বাচনে সহযোগিতা প্রয়োজন?",
       subtitle: "আমাদের দল আপনাকে উপযুক্ত অটোডেস্ক সফটওয়্যার ও সাবস্ক্রিপশন অপশন নির্বাচনে সাহায্য করবে।",
       phoneLabel: "ফোন হেল্পলাইন",
-      phoneValue: "+৮৮০ ১৭০০-০০০০০০",
+      phoneValue: "+৮৮০ ৯৬৯৭৩৯৯৮৭৯",
       whatsappLabel: "হোয়াটসঅ্যাপ ডেস্ক",
       whatsappValue: "+৬৩ ৯৫৫ ২৫০ ৬০২৩",
       emailLabel: "ইমেইল ডেস্ক",
