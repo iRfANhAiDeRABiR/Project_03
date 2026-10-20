@@ -38,15 +38,27 @@ export const initFacebookPixel = () => {
 };
 
 /**
- * Safe wrapper to send standard or custom Meta Pixel conversion events
+ * Safe wrapper to send standard or custom Meta Pixel and Google Tag Manager conversion events
  */
 export const trackPixelEvent = (eventName, params = {}) => {
   if (typeof window === 'undefined') return;
 
+  // 1. Meta (Facebook) Pixel Event
   if (window.fbq) {
     window.fbq('track', eventName, params);
   } else if (import.meta.env.DEV) {
     console.log(`[Meta Pixel Event: ${eventName}]`, params);
+  }
+
+  // 2. Google Tag Manager (GTM) dataLayer Event
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: eventName,
+      ...params
+    });
+  } catch (err) {
+    // Silent fail if dataLayer isn't available
   }
 };
 
