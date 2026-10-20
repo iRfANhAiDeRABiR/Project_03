@@ -20,6 +20,7 @@ import FloatingContactButton from './components/FloatingContactButton';
 
 import PaymentGatewayPage from './components/payment/PaymentGatewayPage';
 import { useLanguage } from './context/LanguageContext';
+import { trackPageView } from './services/pixelService';
 
 function LandingPage() {
   return (
@@ -86,7 +87,11 @@ function AppContent() {
   const [currentHash, setCurrentHash] = React.useState(window.location.hash);
 
   React.useEffect(() => {
-    const handleHashChange = () => setCurrentHash(window.location.hash);
+    trackPageView();
+    const handleHashChange = () => {
+      setCurrentHash(window.location.hash);
+      trackPageView();
+    };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
