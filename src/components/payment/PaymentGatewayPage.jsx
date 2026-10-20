@@ -137,6 +137,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
       duration: order?.duration || "1 Year",
       quantity: order?.quantity || 1,
       totalPrice: order?.totalPrice || "৳ 699",
+      rawPrice: order?.rawPrice || order?.totalPrice || "699",
       paymentMethod: method,
       senderNumber: cleanSender,
       receiverNumber: currentGateway.receiverNumber,

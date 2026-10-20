@@ -43,11 +43,12 @@ export const initFacebookPixel = () => {
 export const trackPixelEvent = (eventName, params = {}) => {
   if (typeof window === 'undefined') return;
 
+  // Always log in browser console so it is 100% visible during testing
+  console.log(`%c[Tracking Event Fired] %c${eventName}`, 'color: #06b6d4; font-weight: bold;', 'color: #10b981; font-weight: bold;', params);
+
   // 1. Meta (Facebook) Pixel Event
   if (window.fbq) {
     window.fbq('track', eventName, params);
-  } else if (import.meta.env.DEV) {
-    console.log(`[Meta Pixel Event: ${eventName}]`, params);
   }
 
   // 2. Google Tag Manager (GTM) dataLayer Event
@@ -118,15 +119,14 @@ export const trackAddPaymentInfo = (gatewayName) => {
  * Track successful purchase submission
  */
 export const trackPurchase = (orderPayload) => {
-  const numericPrice = typeof orderPayload?.rawPrice === 'string'
-    ? parseFloat(orderPayload.rawPrice.replace(/[^0-9.]/g, ''))
-    : (orderPayload?.price || 699);
+  const priceStr = String(orderPayload?.totalPrice || orderPayload?.rawPrice || orderPayload?.price || '699');
+  const numericPrice = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 699;
 
   trackPixelEvent('Purchase', {
     content_name: orderPayload?.product || 'Autodesk All Apps',
     content_type: 'product',
     content_ids: [orderPayload?.refId || 'AUTODESK-SUB'],
-    num_items: orderPayload?.quantity || 1,
+    num_items: Number(orderPayload?.quantity) || 1,
     value: numericPrice,
     currency: 'BDT'
   });
