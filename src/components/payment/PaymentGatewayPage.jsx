@@ -691,7 +691,7 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                       Payment Submitted Successfully!
                     </h3>
                     <p className="text-xs text-white/90 mt-1 leading-relaxed max-w-sm mx-auto">
-                      আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে। টেলিগ্রাম বট থেকে কনফার্ম হওয়া মাত্রই এই স্ক্রিন স্বয়ংক্রিয়ভাবে আপডেট হবে।
+                      আপনার পেমেন্ট তথ্য সফলভাবে গ্রহণ করা হয়েছে। ভেরিফিকেশন কনফার্ম হওয়া মাত্রই এই স্ক্রিন স্বয়ংক্রিয়ভাবে আপডেট হবে।
                     </p>
                   </div>
                 </div>
