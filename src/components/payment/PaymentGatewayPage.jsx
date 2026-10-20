@@ -115,12 +115,34 @@ export default function PaymentGatewayPage({ order, onCancel }) {
   // Step 2 Validation -> Send to Telegram Bot & Proceed to Step 3
   const handleConfirmTrx = async (e) => {
     if (e) e.preventDefault();
-    const cleanTrx = trxId.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30).toUpperCase();
+    const cleanTrx = trxId.trim().replace(/[^a-zA-Z0-9]/g, '').slice(0, 30).toUpperCase();
     const cleanSender = senderNumber.trim().replace(/[^0-9+\s-]/g, '').slice(0, 20);
 
-    if (!cleanTrx || cleanTrx.length < 6) {
-      setError('দয়া করে সঠিক Transaction ID (TrxID) লিখুন');
-      return;
+    // Strict TrxID Validation per Payment Method
+    if (method === 'Bkash') {
+      if (!cleanTrx.startsWith('DJ')) {
+        setError('অবৈধ bKash TrxID! বিকাশ ট্রানজেকশন আইডি অবশ্যই DJ দিয়ে শুরু হতে হবে (যেমন: DJXXXXXXXX)।');
+        return;
+      }
+      if (cleanTrx.length !== 10) {
+        setError(`সঠিক ১০ অক্ষরের bKash TrxID দিন (যেমন: DJXXXXXXXX)। আপনি ${cleanTrx.length} অক্ষর দিয়েছেন।`);
+        return;
+      }
+      if (!/^DJ[A-Z0-9]{8}$/.test(cleanTrx)) {
+        setError('bKash TrxID শুধুমাত্র ইংরেজি বর্ণ ও সংখ্যা দিয়ে গঠিত হতে হবে।');
+        return;
+      }
+    } else if (method === 'Nagad') {
+      if (cleanTrx.length < 8 || cleanTrx.length > 12) {
+        setError('দয়া করে সঠিক নগদ Transaction ID (TrxID) লিখুন (সাধারণত ৮ অক্ষরের হয়)।');
+        return;
+      }
+    } else {
+      // Rocket or fallback
+      if (!cleanTrx || cleanTrx.length < 6) {
+        setError('দয়া করে সঠিক Transaction ID (TrxID) লিখুন');
+        return;
+      }
     }
     setError('');
 
@@ -524,10 +546,11 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                   type="text"
                   value={trxId}
                   onChange={(e) => {
-                    setTrxId(e.target.value);
+                    setTrxId(e.target.value.toUpperCase());
                     if (error) setError('');
                   }}
-                  placeholder="e.g. BL1A92X4Z"
+                  placeholder={method === 'Bkash' ? "e.g. DJ1A92X4Z0" : method === 'Nagad' ? "e.g. 72AK94X2" : "e.g. 2938471928"}
+                  maxLength={method === 'Bkash' ? 10 : 25}
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 focus:border-slate-800 text-slate-900 font-mono font-bold tracking-wider text-base focus:bg-white focus:outline-none transition-all uppercase"
                 />
                 
@@ -538,9 +561,12 @@ export default function PaymentGatewayPage({ order, onCancel }) {
                   </div>
                 )}
                 
-                <p className="text-[10px] text-slate-500 mt-2">
-                  টাকা পাঠানোর পর প্রাপ্ত SMS বা স্টেটমেন্টের Transaction ID (TrxID) দিন
-                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-slate-500 mt-2 gap-1">
+                  <span>টাকা পাঠানোর পর প্রাপ্ত SMS বা স্টেটমেন্টের TrxID দিন</span>
+                  {method === 'Bkash' && (
+                    <span className="font-mono font-bold text-[#e2136e]">ফরম্যাট: DJ + ৮টি অক্ষর/সংখ্যা (মোট ১০টি)</span>
+                  )}
+                </div>
               </div>
 
               {/* Action Buttons */}
