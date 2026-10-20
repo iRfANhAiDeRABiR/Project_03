@@ -57,8 +57,10 @@ export const escapeHtml = (text) => {
 
 /**
  * Sends full order details to the Telegram Bot with formatted HTML
+ * Supports optional reminder mode for recurring unacknowledged alerts
  */
-export const sendOrderToTelegram = async (orderPayload) => {
+export const sendOrderToTelegram = async (orderPayload, options = {}) => {
+  const { isReminder = false, reminderIndex = 1, maxReminders = 8 } = options;
   let targetChatId = getAdminChatId();
 
   // If not yet saved in localStorage, try auto-detecting from recent bot updates
@@ -96,8 +98,12 @@ export const sendOrderToTelegram = async (orderPayload) => {
 
   const couponLine = safeCoupon ? `\n🏷️ <b>Coupon:</b> <code>${safeCoupon}</code> (-10%, saved ${safeDiscount})` : '';
 
+  const headerTitle = isReminder 
+    ? `⚠️ <b>URGENT REMINDER (#${reminderIndex}/${maxReminders})</b>\n🔔 <b>ORDER AWAITING CONFIRMATION</b>`
+    : `🔔 <b>NEW AUTODESK ORDER SUBMISSION</b>`;
+
   const messageText = `
-🔔 <b>NEW AUTODESK ORDER SUBMISSION</b>
+${headerTitle}
 ━━━━━━━━━━━━━━━━━━━━━
 📋 <b>Order Ref:</b> <code>${safeRefId}</code>
 👤 <b>Customer:</b> <b>${safeName}</b>
@@ -115,7 +121,7 @@ export const sendOrderToTelegram = async (orderPayload) => {
 🔑 <b>Transaction ID (TrxID):</b> <code>${safeTrxId}</code>
 ⏰ <b>Time:</b> ${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Dhaka' })}
 ━━━━━━━━━━━━━━━━━━━━━
-Status: ⏳ <b>PENDING VERIFICATION</b>
+Status: ⏳ <b>PENDING VERIFICATION (ACTION REQUIRED)</b>
 `.trim();
 
   try {
